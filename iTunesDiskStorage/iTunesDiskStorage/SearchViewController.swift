@@ -135,4 +135,3 @@ extension SearchViewController: UISearchBarDelegate {
         searchAlbums(with: searchTerm)
     }
 }
-

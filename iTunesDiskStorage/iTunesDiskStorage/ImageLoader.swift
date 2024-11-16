@@ -11,7 +11,6 @@ import UIKit
 final class ImageLoader {
     static let shared = ImageLoader()
     private init() {}
-    var counter = 1
 
     func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
 
@@ -37,8 +36,6 @@ final class ImageLoader {
                let image = UIImage(data: data) {
                 DiskStorageManager.shared.saveImage(data, key: urlString)
                 completion(image)
-                print("Load image", self.counter)
-                self.counter += 1
             } else {
                 completion(nil)
             }
