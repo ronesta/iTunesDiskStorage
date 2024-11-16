@@ -22,6 +22,11 @@ class SearchHistoryViewController: UIViewController {
         setupViews()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateSearchHistory()
+    }
+
     private func setupNavigationBar() {
         title = "History"
     }
@@ -31,11 +36,16 @@ class SearchHistoryViewController: UIViewController {
         view.backgroundColor = .systemGray6
 
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: id)
 
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+
+    func updateSearchHistory() {
+        self.tableView.reloadData()
     }
 }
 
@@ -48,5 +58,19 @@ extension SearchHistoryViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath)
         cell.textLabel?.text = searchHistory[indexPath.row]
         return cell
+    }
+}
+
+extension SearchHistoryViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let selectedTerm = searchHistory[indexPath.row]
+        performSearch(for: selectedTerm)
+    }
+
+    func performSearch(for term: String) {
+        let searchViewController = SearchViewController()
+        searchViewController.searchAlbums(with: term)
+        navigationController?.pushViewController(searchViewController, animated: true)
     }
 }
