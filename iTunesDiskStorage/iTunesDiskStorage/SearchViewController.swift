@@ -61,6 +61,11 @@ final class SearchViewController: UIViewController {
     }
 
     func searchAlbums(with term: String) {
+        if let savedAlbums = DiskStorageManager.shared.loadAlbums(for: term) {
+            albums = savedAlbums
+            collectionView.reloadData()
+            return
+        }
 
         NetworkManager.shared.fetchAlbums(albumName: term) { [weak self] result in
             switch result {
@@ -68,6 +73,7 @@ final class SearchViewController: UIViewController {
                 DispatchQueue.main.async {
                     self?.albums = albums.sorted { $0.collectionName < $1.collectionName }
                     self?.collectionView.reloadData()
+                    DiskStorageManager.shared.saveAlbums(albums, for: term)
                     print("Successfully loaded \(albums.count) albums.")
                 }
             case .failure(let error):
@@ -125,6 +131,7 @@ extension SearchViewController: UISearchBarDelegate {
         guard let searchTerm = searchBar.text, !searchTerm.isEmpty else {
             return
         }
+        DiskStorageManager.shared.saveSearchTerm(searchTerm)
         searchAlbums(with: searchTerm)
     }
 }

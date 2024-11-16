@@ -11,8 +11,15 @@ import UIKit
 final class ImageLoader {
     static let shared = ImageLoader()
     private init() {}
+    var counter = 1
 
     func loadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+
+        if let imageData = DiskStorageManager.shared.loadImage(key: urlString),
+           let image = UIImage(data: imageData) {
+            completion(image)
+            return
+        }
 
         guard let url = URL(string: urlString) else {
             completion(nil)
@@ -28,11 +35,13 @@ final class ImageLoader {
 
             if let data,
                let image = UIImage(data: data) {
+                DiskStorageManager.shared.saveImage(data, key: urlString)
                 completion(image)
+                print("Load image", self.counter)
+                self.counter += 1
             } else {
                 completion(nil)
             }
         }.resume()
     }
 }
-

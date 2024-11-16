@@ -45,6 +45,7 @@ class SearchHistoryViewController: UIViewController {
     }
 
     func updateSearchHistory() {
+        searchHistory = DiskStorageManager.shared.getSearchHistory()
         self.tableView.reloadData()
     }
 }

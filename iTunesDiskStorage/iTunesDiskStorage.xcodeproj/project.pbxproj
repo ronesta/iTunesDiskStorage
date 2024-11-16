@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E1FE5CD72CE9002600360B07 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E1FE5CD62CE9002600360B07 /* SnapKit */; };
+		E1FE5D092CE908A600360B07 /* Disk in Frameworks */ = {isa = PBXBuildFile; productRef = E1FE5D082CE908A600360B07 /* Disk */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1FE5CD72CE9002600360B07 /* SnapKit in Frameworks */,
+				E1FE5D092CE908A600360B07 /* Disk in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +86,7 @@
 			name = iTunesDiskStorage;
 			packageProductDependencies = (
 				E1FE5CD62CE9002600360B07 /* SnapKit */,
+				E1FE5D082CE908A600360B07 /* Disk */,
 			);
 			productName = iTunesDiskStorage;
 			productReference = E1FE5CBD2CE8FFEE00360B07 /* iTunesDiskStorage.app */;
@@ -115,6 +118,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				E1FE5CD52CE9002600360B07 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				E1FE5D072CE908A600360B07 /* XCRemoteSwiftPackageReference "Disk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E1FE5CBE2CE8FFEE00360B07 /* Products */;
@@ -360,6 +364,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		E1FE5D072CE908A600360B07 /* XCRemoteSwiftPackageReference "Disk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/saoudrizwan/Disk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.6.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -367,6 +379,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E1FE5CD52CE9002600360B07 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		E1FE5D082CE908A600360B07 /* Disk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1FE5D072CE908A600360B07 /* XCRemoteSwiftPackageReference "Disk" */;
+			productName = Disk;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
