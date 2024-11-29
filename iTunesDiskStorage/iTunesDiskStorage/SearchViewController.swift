@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 final class SearchViewController: UIViewController {
-    private let searchBar: UISearchBar = {
+    let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.searchBarStyle = .minimal
         searchBar.placeholder = "Search Albums"
@@ -61,23 +61,32 @@ final class SearchViewController: UIViewController {
     }
 
     func searchAlbums(with term: String) {
-        if let savedAlbums = DiskStorageManager.shared.loadAlbums(for: term) {
+        // Загружаем альбомы из локального хранилища
+        let savedAlbums = DiskStorageManager.shared.loadAlbums(for: term)
+        if !savedAlbums.isEmpty {
             albums = savedAlbums
             collectionView.reloadData()
             return
         }
 
+        // Если альбомы не найдены локально, загружаем их из сети
         NetworkManager.shared.fetchAlbums(albumName: term) { [weak self] result in
             switch result {
-            case .success(let albums):
+            case .success(let fetchedAlbums):
                 DispatchQueue.main.async {
-                    self?.albums = albums.sorted { $0.collectionName < $1.collectionName }
+                    // Сортируем альбомы по имени
+                    self?.albums = fetchedAlbums.sorted { $0.collectionName < $1.collectionName }
                     self?.collectionView.reloadData()
-                    DiskStorageManager.shared.saveAlbums(albums, for: term)
-                    print("Successfully loaded \(albums.count) albums.")
+
+                    // Сохраняем каждый альбом по отдельности в хранилище
+                    for album in fetchedAlbums {
+                        DiskStorageManager.shared.saveAlbum(album, for: term)
+                    }
+
+                    print("Successfully loaded \(fetchedAlbums.count) albums.")
                 }
             case .failure(let error):
-                print("Failed to load images with error: \(error.localizedDescription)")
+                print("Failed to load albums with error: \(error.localizedDescription)")
             }
         }
     }
