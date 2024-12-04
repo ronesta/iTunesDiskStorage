@@ -9,16 +9,19 @@ import Foundation
 
 final class DiskStorageManager {
     static let shared = DiskStorageManager()
+
     private let historyKey = "searchHistory.json"
     private let fileManager = FileManager.default
-    private let documentsDirectory: URL
 
-    private init() {
-        documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+    private init() {}
+
+    private var documentsDirectory: URL {
+        return fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
     }
 
     func saveAlbum(_ album: Album, for searchTerm: String) {
         let directoryPath = documentsDirectory.appendingPathComponent(searchTerm)
+
         if !fileManager.fileExists(atPath: directoryPath.path) {
             do {
                 try fileManager.createDirectory(at: directoryPath, withIntermediateDirectories: true, attributes: nil)
@@ -30,6 +33,7 @@ final class DiskStorageManager {
 
         let albumFileName = "\(album.artistId).json"
         let fileURL = directoryPath.appendingPathComponent(albumFileName)
+
         do {
             let data = try JSONEncoder().encode(album)
             try data.write(to: fileURL)
@@ -40,18 +44,20 @@ final class DiskStorageManager {
 
     func loadAlbums(for searchTerm: String) -> [Album] {
         let directoryPath = documentsDirectory.appendingPathComponent(searchTerm)
+
         guard fileManager.fileExists(atPath: directoryPath.path) else {
             return []
         }
 
         do {
             let albumFiles = try fileManager.contentsOfDirectory(atPath: directoryPath.path)
-            var albums: [Album] = []
+            var albums = [Album]()
 
             for fileName in albumFiles {
                 let fileURL = directoryPath.appendingPathComponent(fileName)
                 let data = try Data(contentsOf: fileURL)
                 let album = try JSONDecoder().decode(Album.self, from: data)
+
                 albums.append(album)
             }
 
@@ -64,6 +70,7 @@ final class DiskStorageManager {
 
     func saveImage(_ image: Data, key: String) {
         let fileURL = documentsDirectory.appendingPathComponent("\(key)")
+
         do {
             try image.write(to: fileURL)
         } catch {
@@ -73,9 +80,11 @@ final class DiskStorageManager {
 
     func loadImage(key: String) -> Data? {
         let fileURL = documentsDirectory.appendingPathComponent("\(key)")
+
         guard fileManager.fileExists(atPath: fileURL.path) else {
             return nil
         }
+
         do {
             return try Data(contentsOf: fileURL)
         } catch {
@@ -86,9 +95,11 @@ final class DiskStorageManager {
 
     func saveSearchTerm(_ term: String) {
         var history = getSearchHistory()
+
         guard !history.contains(term) else {
             return
         }
+
         history.append(term)
         saveSearchHistory(history)
     }
@@ -109,51 +120,9 @@ final class DiskStorageManager {
         }
     }
 
-    func deleteAlbum(_ album: Album, for searchTerm: String) {
-        let directoryPath = documentsDirectory.appendingPathComponent(searchTerm)
-        let fileURL = directoryPath.appendingPathComponent("\(album.artistId).json")
-        do {
-            try fileManager.removeItem(at: fileURL)
-        } catch {
-            print("Error deleting album: \(error.localizedDescription)")
-        }
-    }
-
-    func clearAlbums() {
-        let history = getSearchHistory()
-        for term in history {
-            let fileURL = documentsDirectory.appendingPathComponent("\(term).json")
-            do {
-                try fileManager.removeItem(at: fileURL)
-            } catch {
-                print("Error deleting album for term \(term): \(error.localizedDescription)")
-            }
-        }
-        clearHistory()
-    }
-
-    func clearImage(key: String) {
-        let fileURL = documentsDirectory.appendingPathComponent("\(key)")
-        do {
-            if fileManager.fileExists(atPath: fileURL.path) {
-                try fileManager.removeItem(at: fileURL)
-            }
-        } catch {
-            print("Error deleting image: \(error.localizedDescription)")
-        }
-    }
-
-    func clearHistory() {
-        let fileURL = documentsDirectory.appendingPathComponent(historyKey)
-        do {
-            try fileManager.removeItem(at: fileURL)
-        } catch {
-            print("Error deleting search history: \(error.localizedDescription)")
-        }
-    }
-
     private func saveSearchHistory(_ history: [String]) {
         let fileURL = documentsDirectory.appendingPathComponent(historyKey)
+
         do {
             let data = try JSONEncoder().encode(history)
             try data.write(to: fileURL)

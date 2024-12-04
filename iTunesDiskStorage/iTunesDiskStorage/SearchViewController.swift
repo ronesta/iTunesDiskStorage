@@ -61,7 +61,6 @@ final class SearchViewController: UIViewController {
     }
 
     func searchAlbums(with term: String) {
-        // Загружаем альбомы из локального хранилища
         let savedAlbums = DiskStorageManager.shared.loadAlbums(for: term)
         if !savedAlbums.isEmpty {
             albums = savedAlbums
@@ -69,16 +68,13 @@ final class SearchViewController: UIViewController {
             return
         }
 
-        // Если альбомы не найдены локально, загружаем их из сети
         NetworkManager.shared.fetchAlbums(albumName: term) { [weak self] result in
             switch result {
             case .success(let fetchedAlbums):
                 DispatchQueue.main.async {
-                    // Сортируем альбомы по имени
                     self?.albums = fetchedAlbums.sorted { $0.collectionName < $1.collectionName }
                     self?.collectionView.reloadData()
 
-                    // Сохраняем каждый альбом по отдельности в хранилище
                     for album in fetchedAlbums {
                         DiskStorageManager.shared.saveAlbum(album, for: term)
                     }
